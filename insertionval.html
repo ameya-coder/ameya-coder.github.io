@@ -1,0 +1,100 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insertion Sort Visualization</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="inputForm">
+        <form onsubmit="startVisualization(event)">
+            <h1>Insertion Sort Visualization</h1>
+            <label for="arraySize">Enter Array Size:</label>
+            <input type="number" id="arraySize" name="arraySize" required>
+            <br>
+            <label for="arrayElements">Enter Array Elements:</label>
+            <input type="text" id="arrayElements" name="arrayElements" required placeholder="input numbers separated by spaces, less than 70">
+            <br>
+            <button id="mybutton" type="submit">Sort</button>
+        </form>
+    </div>
+
+    <div id="barsContainer">
+        <div id="bars"></div>
+    </div>
+
+    <script>
+        function displayBars(array, selectedIndexes = []) {
+            var barsDiv = document.getElementById("bars");
+            barsDiv.innerHTML = "";
+
+            for (var i = 0; i < array.length; i++) {
+                var barHeight = array[i] * 10;
+                var bar = document.createElement("div");
+                bar.className = "bar";
+                if (selectedIndexes.includes(i)) {
+                    bar.style.backgroundColor = "red";
+                }
+                bar.style.height = barHeight + "px";
+
+                var valueSpan = document.createElement("span");
+                valueSpan.textContent = array[i];
+
+                bar.appendChild(valueSpan);
+                barsDiv.appendChild(bar);
+            }
+        }
+
+        async function insertionSort(array) {
+            for (var i = 0; i < array.length; i++) {
+                var temp = array[i];
+                var j = i - 1;
+
+                while (j >= 0 && temp < array[j]) {
+                    array[j + 1] = array[j];
+                    j--;
+
+                    displayBars(array, [j + 1]);
+                    await sleep(1200);
+                }
+                array[j + 1] = temp;
+            }
+            displayBars(array);
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        async function startVisualization(event) {
+            event.preventDefault();
+
+            var arraySizeInput = document.getElementById("arraySize");
+            var arrayElementsInput = document.getElementById("arrayElements");
+
+            var n = parseInt(arraySizeInput.value);
+            var array = arrayElementsInput.value
+                .trim()
+                .split(" ")
+                .map(element => parseInt(element));
+
+            // Check if the array size matches the specified size
+            if (array.length !== n) {
+                alert("The number of array elements does not match the specified size.");
+                return;
+            }
+
+            // Check if all elements are valid integers and less than 70
+            if (array.some(isNaN) || array.some(num => num >= 70)) {
+                alert("Please ensure all array elements are integers less than 70.");
+                return;
+            }
+
+            await insertionSort(array);
+
+            console.log("Sorted array:", array);
+        }
+    </script>
+</body>
+</html>

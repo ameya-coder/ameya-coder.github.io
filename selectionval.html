@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selection Sort Visualization</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="inputForm">
+        <form onsubmit="startVisualization(event)">
+            <h1>Selection Sort Visualization</h1>
+            <label for="arraySize">Enter Array size:</label>
+            <input type="number" id="arraySize" name="arraySize" required>
+            <br>
+            <label for="arrayElements">Enter Array elements:</label>
+            <input type="text" id="arrayElements" name="arrayElements" required placeholder="Input numbers separated by spaces">
+            <br>
+            <button id="mybutton" type="submit">Sort</button>
+        </form>
+    </div>
+
+    <div id="barsContainer">
+        <div id="bars"></div>
+    </div>
+
+    <script>
+        function displayBars(array, selectedIndexes = []) {
+            var barsDiv = document.getElementById("bars");
+            barsDiv.innerHTML = "";
+
+            for (var i = 0; i < array.length; i++) {
+                var barHeight = array[i] * 10; 
+                var bar = document.createElement("div");
+                bar.className = "bar";
+                if (selectedIndexes.includes(i)) {
+                    bar.style.backgroundColor = "red";
+                }
+                bar.style.height = barHeight + "px";
+
+                var valueSpan = document.createElement("span");
+                valueSpan.textContent = array[i];
+
+                bar.appendChild(valueSpan);
+                barsDiv.appendChild(bar);
+            }
+        }
+
+        async function selectionSort(array) {
+            for (var i = 0; i < array.length - 1; i++) {
+                var minIndex = i;
+
+                for (var j = i + 1; j < array.length; j++) {
+                    if (array[j] < array[minIndex]) {
+                        minIndex = j;
+                    }
+                }
+
+                var temp = array[i];
+                array[i] = array[minIndex];
+                array[minIndex] = temp;
+
+                displayBars(array, [i, minIndex]);
+                await sleep(1500);
+            }
+
+            displayBars(array);
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        async function startVisualization(event) {
+            event.preventDefault();
+
+            var arraySizeInput = document.getElementById("arraySize");
+            var arrayElementsInput = document.getElementById("arrayElements");
+
+            var n = parseInt(arraySizeInput.value);
+            var array = arrayElementsInput.value
+                .trim()
+                .split(" ")
+                .map(element => parseInt(element));
+
+            // Check if the array size matches the specified size
+            if (array.length !== n) {
+                alert("The number of array elements does not match the specified size.");
+                return;
+            }
+
+            // Check if all elements are integers
+            if (array.some(isNaN)) {
+                alert("Please ensure all array elements are integers.");
+                return;
+            }
+
+            // If validation is successful, proceed with sorting
+            await selectionSort(array);
+
+            console.log("Sorted array:", array);
+        }
+    </script>
+</body>
+</html>
